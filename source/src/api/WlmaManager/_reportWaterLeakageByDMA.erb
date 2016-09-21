@@ -1,0 +1,72 @@
+    /**
+     *
+     * @apiName ReportWaterLeakageByDMA
+     * @apiGroup Wlma Manager
+     * @apiVersion 0.1.0
+     *
+     * @api {post} /wlmaManager/reportWaterLeakageByDMA/ Report Water Leakage by DMA
+     * @apiDescription คำอธิบาย : ในส่วนนี้จะมีหน้าที่แสดงรายงานปริมาณน้ำสูญเสียแยกตามแต่ละ DMA ในเดือนที่กำหนด
+     *
+     *
+     * @apiParam {String} name     New name of the user
+     *
+     * @apiSampleRequest /wlmaManager/reportWaterLeakageByDMA/
+     *
+     * @apiSuccess {String} msg แสดงข้อความทักทายผู้ใช้งาน
+     *
+     * @apiSuccessExample Example data on success:
+     * {
+     *   "msg": "Hello, anusorn"
+     * }
+     *
+     * @apiError UserNotFound The <code>id</code> of the User was not found.
+     * @apiErrorExample {json} Error-Response:
+     *     HTTP/1.1 404 Not Found
+     *     {
+     *       "error": "UserNotFound"
+     *     }
+     *
+     */
+
+    function reportWaterLeakageByDMA($app, $pdo, $conn_db2) {
+
+        /* ************************* */
+        /* เริ่มกระบวนการเชื่อมต่อฐานข้อมูล DB2 ของ WLMA */
+        /* ************************* */
+        $reports = array();
+
+        $sql = "call P_WB_WL_REPORT2('201604', '01')";
+
+        if ($conn_db2) {
+            // # code...
+            $stmt = db2_exec($conn_db2, $sql);
+
+            while ($row = db2_fetch_array($stmt)) {
+                
+                $tmpAREA_CODE = iconv("TIS-620", "UTF-8",$row[0]);
+                $tmpAREA_STATUS = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row[1]);
+                $tmpAREA_WL = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row[2]);
+
+                $reports[] = array(
+                    "area_code" => $tmpAREA_CODE,
+                    "area_status" => $tmpAREA_STATUS,
+                    "area_wl" => $tmpAREA_WL
+                );
+            }
+        }
+
+        $rowCount = count($reports);
+
+        /* ************************* */
+        /* เริ่มกระบวนการส่งค่ากลับ */
+        /* ************************* */
+        $resultText = "success";
+
+        $reportResult = array("result" =>  $resultText, "count" => $rowCount, "rows" => $reports);
+        //$reportResult = array("result" =>  $resultText, "msg" => "สวัสดี, $name");
+        //$reportResult = array("result" =>  $resultText);
+        
+        $app->response()->header("Content-Type", "application/json");
+        echo json_encode($reportResult);
+
+    };

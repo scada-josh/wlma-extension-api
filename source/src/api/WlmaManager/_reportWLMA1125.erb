@@ -1,0 +1,184 @@
+	/**
+	 *
+	 * @apiName ReportWLMA1125
+	 * @apiGroup Wlma Manager
+	 * @apiVersion 0.1.0
+	 *
+	 * @api {post} /wlmaManager/reportWLMA1125/ Report WLMA-1125
+	 * @apiDescription คำอธิบาย : ในส่วนนี้จะมีหน้าที่แสดงรายงานสถานะการเชื่อมโยงระหว่าง WLMA กับ 1125
+	 *
+	 *
+	 * @apiSampleRequest /wlmaManager/reportWLMA1125/
+	 *
+	 * @apiSuccess {String} msg แสดงข้อความทักทายผู้ใช้งาน
+	 *
+	 * @apiSuccessExample Example data on success:
+	 * {
+	 *   "msg": "Hello, anusorn"
+	 * }
+	 *
+	 * @apiError UserNotFound The <code>id</code> of the User was not found.
+	 * @apiErrorExample {json} Error-Response:
+	 *     HTTP/1.1 404 Not Found
+	 *     {
+	 *       "error": "UserNotFound"
+	 *     }
+	 *
+	 */
+	 function reportWLMA1125($app, $pdo, $conn_db2) {
+
+	 	/* ************************* */
+        /* เริ่มกระบวนการรับค่าพารามิเตอร์จากส่วนของ Payload ซึ่งอยู่ในรูปแบบ JSON */
+        /* ************************* */
+        $headers = $app->request->headers;
+        $ContetnType = $app->request->headers->get('Content-Type');
+
+        /**
+        * apidoc @apiSampleRequest, iOS RESTKit use content-type is "application/json"
+        * Web Form, Advance REST Client App use content-type is "application/x-www-form-urlencoded"
+        */
+        if ($ContetnType == "application/json") {
+
+	        $request = $app->request();
+	        $result = json_decode($request->getBody());
+
+	        /* receive request */
+	        $postStartDate = $result->startDate;
+	        $postEndDate = $result->endDate;
+
+
+		} else if ($ContetnType == "application/x-www-form-urlencoded"){
+
+		    //$userID = $app->request()->params('userID_param');
+		    //$userID = $app->request()->post('userID_param');
+		}
+
+
+	    /* ************************* */
+        /* เริ่มกระบวนการเชื่อมต่อฐานข้อมูล DB2 ของ WLMA */
+        /* ************************* */
+        $reports = array();
+
+        // เปิดงาน
+        $sql_open_only = "select 	JOB_code, 
+        				BRANCH_CODE, 
+        				AREA_CODE, 
+        				JOB_OPEN_DT, 
+        				JOB_CLOSE_DT, 
+        				JOB_BEG_DT, 
+        				JOB_END_DT, 
+        				JOB_STATUS, 
+        				CSS_CODE, 
+        				REQUEST_CODE 
+						from FSM_MAIN
+						where job_open_dt between timestamp ('2015-11-01') and timestamp ('2015-11-30')";
+
+
+
+        if ($conn_db2) {
+            // OPEN Only
+            $stmt_open_only = db2_exec($conn_db2, $sql_open_only);
+
+            while ($row = db2_fetch_both($stmt_open_only)) {
+           
+
+                $tmpJOB_code = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row["JOB_CODE"]);
+				$tmpBRANCH_CODE = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row['BRANCH_CODE']); 
+				$tmpAREA_CODE = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row['AREA_CODE']); 
+				$tmpJOB_OPEN_DT = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row['JOB_OPEN_DT']); 
+				$tmpJOB_CLOSE_DT = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row['JOB_CLOSE_DT']); 
+				$tmpJOB_BEG_DT = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row['JOB_BEG_DT']); 
+				$tmpJOB_END_DT = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row['JOB_END_DT']); 
+				$tmpJOB_STATUS = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row['JOB_STATUS']); 
+				$tmpCSS_CODE = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row['CSS_CODE']); 
+				$tmpREQUEST_CODE = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row['REQUEST_CODE']);
+				$tmpPIPE_SIZE_CODE = "";
+				$tmpPIPE_MATERIAL_CODE = "";
+
+                $reports[] = array(
+                	"JOB_CODE" => $tmpJOB_code,
+                  	"BRANCH_CODE" => $tmpBRANCH_CODE,
+                  	"AREA_CODE" => $tmpAREA_CODE,
+                  	"JOB_OPEN_DT" => $tmpJOB_OPEN_DT,
+                  	"JOB_CLOSE_DT" => $tmpJOB_CLOSE_DT,
+                  	"JOB_BEG_DT" => $tmpJOB_BEG_DT,
+                  	"JOB_END_DT" => $tmpJOB_END_DT,
+                  	"JOB_STATUS" => $tmpJOB_STATUS,
+                  	"CSS_CODE" => $tmpCSS_CODE,
+                  	"REQUEST_CODE" => $tmpREQUEST_CODE,
+                  	"PIPE_SIZE_CODE" => $tmpPIPE_SIZE_CODE,
+                  	"PIPE_MATERIAL_CODE" => $tmpPIPE_MATERIAL_CODE,
+                  	"TYPE" => "OPEN"
+                );
+            }
+
+
+        // Close Only
+		$sql_close_only = "select FMH.JOB_code, 
+						FMH.BRANCH_CODE, 
+						FMH.AREA_CODE, 
+						FMH.JOB_OPEN_DT, 
+						FMH.JOB_CLOSE_DT, 
+						FMH.JOB_BEG_DT, 
+						FMH.JOB_END_DT, 
+						FMH.JOB_STATUS, 
+						FMH.CSS_CODE, 
+						FMH.REQUEST_CODE, 
+						LR.PIPE_SIZE_CODE, 
+						LR.PIPE_MATERIAL_CODE
+						from FSM_MAIN_HIST FMH, fsm_lr LR
+						where FMH.JOB_code = LR.JOB_CODE and job_open_dt between timestamp ('2015-11-01') and timestamp ('2015-11-30')";
+
+           
+            $stmt_close_only = db2_exec($conn_db2, $sql_close_only);
+
+            while ($row = db2_fetch_both($stmt_close_only)) {
+           
+
+                $tmpJOB_code = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row["JOB_CODE"]);
+				$tmpBRANCH_CODE = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row['BRANCH_CODE']); 
+				$tmpAREA_CODE = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row['AREA_CODE']); 
+				$tmpJOB_OPEN_DT = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row['JOB_OPEN_DT']); 
+				$tmpJOB_CLOSE_DT = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row['JOB_CLOSE_DT']); 
+				$tmpJOB_BEG_DT = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row['JOB_BEG_DT']); 
+				$tmpJOB_END_DT = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row['JOB_END_DT']); 
+				$tmpJOB_STATUS = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row['JOB_STATUS']); 
+				$tmpCSS_CODE = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row['CSS_CODE']); 
+				$tmpREQUEST_CODE = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row['REQUEST_CODE']);
+				$tmpPIPE_SIZE_CODE = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row['PIPE_SIZE_CODE']);
+				$tmpPIPE_MATERIAL_CODE = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row['PIPE_MATERIAL_CODE']);
+
+                $reports[] = array(
+                	"JOB_CODE" => $tmpJOB_code,
+                  	"BRANCH_CODE" => $tmpBRANCH_CODE,
+                  	"AREA_CODE" => $tmpAREA_CODE,
+                  	"JOB_OPEN_DT" => $tmpJOB_OPEN_DT,
+                  	"JOB_CLOSE_DT" => $tmpJOB_CLOSE_DT,
+                  	"JOB_BEG_DT" => $tmpJOB_BEG_DT,
+                  	"JOB_END_DT" => $tmpJOB_END_DT,
+                  	"JOB_STATUS" => $tmpJOB_STATUS,
+                  	"CSS_CODE" => $tmpCSS_CODE,
+                  	"REQUEST_CODE" => $tmpREQUEST_CODE,
+                  	"PIPE_SIZE_CODE" => $tmpPIPE_SIZE_CODE,
+                  	"PIPE_MATERIAL_CODE" => $tmpPIPE_MATERIAL_CODE,
+                  	"TYPE" => "CLOSED"
+                );
+            }
+        }
+
+        $rowCount = count($reports);
+
+        /* ************************* */
+        /* เริ่มกระบวนการส่งค่ากลับ */
+        /* ************************* */
+        $resultText = "success";
+
+        $reportResult = array("result" =>  $resultText, "count" => $rowCount, "rows" => $reports);
+        //$reportResult = array("result" =>  $resultText, "msg" => "สวัสดี, $name");
+        //$reportResult = array("result" =>  $resultText);
+        
+        $app->response()->header("Content-Type", "application/json");
+        echo json_encode($reportResult);
+
+	 }
+	 

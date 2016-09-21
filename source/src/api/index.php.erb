@@ -1,0 +1,78 @@
+---
+title: WLMA Extension - API
+layout: "layout-blank"
+---
+
+<?php
+
+    date_default_timezone_set("Asia/Bangkok");
+
+    require_once '../../packages/autoload.php';
+
+
+    /* ****************** */
+    /* Slim framework 2.x */
+    /* ****************** */
+    
+    // $app = new \Slim\Slim();
+
+    $logWriter = new \Slim\LogWriter(fopen('./api-debug.log', 'a'));
+    $app = new \Slim\Slim(array('log.enabled' => true,
+                                'log.writer' => $logWriter,
+                                'debug' => true));
+
+
+
+<% if config[:phase_environment] == "Development" %>
+
+    /* Connect Database Manager Partial : Localhost */
+    <%= partial "/ConnectDatabase/_connectDB2_Localhost" %>
+    <%= partial "/ConnectDatabase/_connectMySQL_Localhost" %>
+
+<% elsif config[:phase_environment] == "Test" %>
+
+    /* Connect Database Manager Partial : Localhost */
+    <%= partial "/ConnectDatabase/_connectDB2_Localhost" %>
+    <%= partial "/ConnectDatabase/_connectMySQL_Localhost" %>
+
+<% elsif config[:phase_environment] == "Production" %>
+
+    /* Connect Database Manager Partial : Production */
+    <%= partial "/ConnectDatabase/_connectDB2_Production" %>
+    <%= partial "/ConnectDatabase/_connectMySQL_Production" %>
+
+<% end %>
+
+
+    /* Test manager */
+    $app->get('/hello/:name',function($name) use ($app) { 
+        getHello($app, $name); 
+    });
+
+    /* WLMA manager */
+    $app->post('/wlmaManager/checkUserPasswordFromWLMA/',function() use ($app, $pdo, $conn_db2) { checkUserPasswordFromWLMA($app, $pdo, $conn_db2); });
+    $app->post('/wlmaManager/reportPressureAverage/',function() use ($app, $pdo, $conn_db2) { reportPressureAverage($app, $pdo, $conn_db2); });
+    $app->post('/wlmaManager/reportWLMA1125/',function() use ($app, $pdo, $conn_db2) { reportWLMA1125($app, $pdo, $conn_db2); });
+    $app->post('/wlmaManager/reportWaterLeakageByDMA/',function() use ($app, $pdo, $conn_db2) { reportWaterLeakageByDMA($app, $pdo, $conn_db2); });
+    $app->post('/wlmaManager/getFlowPressureByDM/',function() use ($app, $pdo, $conn_db2) { getFlowPressureByDM($app, $pdo, $conn_db2); });
+
+
+
+
+    /* WLMA Manager Partial */
+    <%= partial "/WlmaManager/_checkUserPasswordFromWLMA" %>
+    <%= partial "/WlmaManager/_reportPressureAverage" %>
+    <%= partial "/WlmaManager/_reportWLMA1125" %>
+    <%= partial "/WlmaManager/_reportWaterLeakageByDMA" %>
+    <%= partial "/WlmaManager/_getFlowPressureByDM" %>
+
+
+	$app->run();
+
+
+	/* Test Partial */
+    <%= partial "/Test/_getHello" %>
+
+
+
+?>

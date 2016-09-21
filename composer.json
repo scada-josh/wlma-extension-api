@@ -1,0 +1,11 @@
+{
+    "require": {
+        "slim/slim": "2.*",
+        "vrana/notorm": "dev-master",
+        "fergusean/nusoap": "^0.9.5",
+        "tuupola/slim-jwt-auth": "~1.0.2"
+    },
+    "config" : {
+        "vendor-dir" : "./source/packages"
+    }
+}

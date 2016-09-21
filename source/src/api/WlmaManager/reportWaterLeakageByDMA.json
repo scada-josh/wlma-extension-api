@@ -1,0 +1,261 @@
+{
+  "result": "success",
+  "count": 51,
+  "rows": [
+    {
+      "area_code": "01-01-01",
+      "area_status": "A",
+      "area_wl": "53.82"
+    },
+    {
+      "area_code": "01-01-02",
+      "area_status": "A",
+      "area_wl": "52.81"
+    },
+    {
+      "area_code": "01-01-03",
+      "area_status": "A",
+      "area_wl": "12.07"
+    },
+    {
+      "area_code": "01-01-04",
+      "area_status": "A",
+      "area_wl": "59.27"
+    },
+    {
+      "area_code": "01-01-05",
+      "area_status": "A",
+      "area_wl": "50.19"
+    },
+    {
+      "area_code": "01-01-06",
+      "area_status": "A",
+      "area_wl": "47.40"
+    },
+    {
+      "area_code": "01-02-01",
+      "area_status": "A",
+      "area_wl": "-23.36"
+    },
+    {
+      "area_code": "01-02-02",
+      "area_status": "I",
+      "area_wl": "-245.95"
+    },
+    {
+      "area_code": "01-02-03",
+      "area_status": "I",
+      "area_wl": "0.00"
+    },
+    {
+      "area_code": "01-02-04",
+      "area_status": "I",
+      "area_wl": "13683.03"
+    },
+    {
+      "area_code": "01-02-05",
+      "area_status": "A",
+      "area_wl": "50.24"
+    },
+    {
+      "area_code": "01-03-01",
+      "area_status": "A",
+      "area_wl": "-191.18"
+    },
+    {
+      "area_code": "01-03-02",
+      "area_status": "A",
+      "area_wl": "51.32"
+    },
+    {
+      "area_code": "01-03-03",
+      "area_status": "A",
+      "area_wl": "0.00"
+    },
+    {
+      "area_code": "01-03-04",
+      "area_status": "A",
+      "area_wl": "45.54"
+    },
+    {
+      "area_code": "01-03-05",
+      "area_status": "I",
+      "area_wl": "2.74"
+    },
+    {
+      "area_code": "01-03-06",
+      "area_status": "A",
+      "area_wl": "-46.68"
+    },
+    {
+      "area_code": "01-04-01",
+      "area_status": "A",
+      "area_wl": "36.34"
+    },
+    {
+      "area_code": "01-04-02",
+      "area_status": "A",
+      "area_wl": "52.94"
+    },
+    {
+      "area_code": "01-04-03",
+      "area_status": "A",
+      "area_wl": "19.97"
+    },
+    {
+      "area_code": "01-04-04",
+      "area_status": "A",
+      "area_wl": "-9.67"
+    },
+    {
+      "area_code": "01-04-05",
+      "area_status": "A",
+      "area_wl": "-63.15"
+    },
+    {
+      "area_code": "01-04-06",
+      "area_status": "A",
+      "area_wl": "46.02"
+    },
+    {
+      "area_code": "01-04-07",
+      "area_status": "A",
+      "area_wl": "0.00"
+    },
+    {
+      "area_code": "01-05-01",
+      "area_status": "A",
+      "area_wl": "40.08"
+    },
+    {
+      "area_code": "01-05-02",
+      "area_status": "A",
+      "area_wl": "46.46"
+    },
+    {
+      "area_code": "01-05-03",
+      "area_status": "I",
+      "area_wl": "29.62"
+    },
+    {
+      "area_code": "01-05-04",
+      "area_status": "I",
+      "area_wl": "61.96"
+    },
+    {
+      "area_code": "01-06-01",
+      "area_status": "A",
+      "area_wl": "44.02"
+    },
+    {
+      "area_code": "01-06-02",
+      "area_status": "A",
+      "area_wl": "100.50"
+    },
+    {
+      "area_code": "01-06-03",
+      "area_status": "A",
+      "area_wl": "74.78"
+    },
+    {
+      "area_code": "01-06-04",
+      "area_status": "A",
+      "area_wl": "31.71"
+    },
+    {
+      "area_code": "01-06-05",
+      "area_status": "A",
+      "area_wl": "28.02"
+    },
+    {
+      "area_code": "01-07-01",
+      "area_status": "A",
+      "area_wl": "42.96"
+    },
+    {
+      "area_code": "01-07-02",
+      "area_status": "A",
+      "area_wl": "46.24"
+    },
+    {
+      "area_code": "01-07-03",
+      "area_status": "A",
+      "area_wl": "76.70"
+    },
+    {
+      "area_code": "01-07-04",
+      "area_status": "I",
+      "area_wl": "42.38"
+    },
+    {
+      "area_code": "01-08-01",
+      "area_status": "A",
+      "area_wl": "31.38"
+    },
+    {
+      "area_code": "01-08-02",
+      "area_status": "A",
+      "area_wl": "68.96"
+    },
+    {
+      "area_code": "01-08-03",
+      "area_status": "A",
+      "area_wl": "42.94"
+    },
+    {
+      "area_code": "01-08-04",
+      "area_status": "A",
+      "area_wl": "-77.04"
+    },
+    {
+      "area_code": "01-09-01",
+      "area_status": "A",
+      "area_wl": "50.90"
+    },
+    {
+      "area_code": "01-09-02",
+      "area_status": "A",
+      "area_wl": "36.11"
+    },
+    {
+      "area_code": "01-09-03",
+      "area_status": "A",
+      "area_wl": "89.13"
+    },
+    {
+      "area_code": "01-09-04",
+      "area_status": "A",
+      "area_wl": "39026.11"
+    },
+    {
+      "area_code": "01-09-05",
+      "area_status": "I",
+      "area_wl": "0.00"
+    },
+    {
+      "area_code": "01-09-06",
+      "area_status": "A",
+      "area_wl": "0.00"
+    },
+    {
+      "area_code": "01-09-07",
+      "area_status": "I",
+      "area_wl": "31.69"
+    },
+    {
+      "area_code": "01-09-08",
+      "area_status": "A",
+      "area_wl": "61.72"
+    },
+    {
+      "area_code": "01-09-09",
+      "area_status": "A",
+      "area_wl": "0.00"
+    },
+    {
+      "area_code": "01-09-10",
+      "area_status": "A",
+      "area_wl": "61.48"
+    }
+  ]
+}

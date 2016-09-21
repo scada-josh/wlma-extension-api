@@ -1,0 +1,34 @@
+ /**
+ *
+ * @apiName HelloWorld
+ * @apiGroup TEST SERVICE
+ * @apiVersion 0.1.0
+ *
+ * @api {get} /hello/:name Test First Service (v 0.1.0)
+ * @apiDescription คำอธิบาย : Hello World, Test Service
+ *
+ *
+ * @apiSampleRequest /hello/:name
+ *
+ * @apiParam {String} name     New name of the user
+ *
+ * @apiSuccess {String} msg แสดงข้อความทักทายผู้ใช้งาน
+ *
+ * @apiSuccessExample Example data on success:
+ * {
+ *   "msg": "Hello, anusorn"
+ * }
+ *
+ * @apiError UserNotFound The <code>id</code> of the User was not found.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "UserNotFound"
+ *     }
+ *
+ */
+ 
+ function getHello($app, $name) {
+ 	$return_m = array("msg" => "Hello, $name");
+ 	echo json_encode($return_m);
+ }

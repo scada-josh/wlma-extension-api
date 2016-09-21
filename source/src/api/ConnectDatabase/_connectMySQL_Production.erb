@@ -1,0 +1,6 @@
+    /* เชื่อมต่อ MySQL บนเครื่อง 172.16.194.210 (http://wlma-mt.wms.mwa/) */
+    $dsn = "mysql:dbname=rmr_db;host=localhost;charset=UTF8";
+    $username = "root";
+    $password = "P@ssw0rd";
+    $pdo = new PDO($dsn, $username, $password);
+    $db = new NotORM($pdo);

@@ -1,0 +1,42 @@
+        /* ************************* */
+        /* เริ่มกระบวนการเชื่อมต่อฐานข้อมูล DB2 ของ WLMA */
+        /* ************************* */
+        $reports = array();
+
+
+
+        $sql = "select meter_code, rtu_log_dt, log_type, value from METER_ONLINE_DATA_LAST where meter_code = '".$postDM."'";
+
+
+        if ($conn_db2) {
+            // # code...
+            $stmt = db2_exec($conn_db2, $sql);
+
+            $tmpDM = "";
+            $tmpFlowVal = "-"; 
+            $tmpPressureVal = "-";
+
+            while ($row = db2_fetch_array($stmt)) {
+                
+                $tmpDM = iconv("TIS-620", "UTF-8",$row[0]);
+                $tmpRtuLogDt = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row[1]);
+                $tmpLogType = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row[2]);
+                $tmpValue = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row[3]);
+
+                if ($tmpLogType == "F") {
+                	$tmpFlowVal = $tmpValue;
+                } else if ($tmpLogType == "P") {
+                	$tmpPressureVal = $tmpValue;
+                }
+
+
+            }
+
+
+	       $reports[] = array(
+	            "date" => date("Y-m-d"),
+	            "dm_name" => $tmpDM,
+	            "flow_value" => (string)$tmpFlowVal,
+	            "pressure_value" => (string)$tmpPressureVal
+	        );
+        }
