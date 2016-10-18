@@ -18,60 +18,65 @@
 
 
 
+    // $app->add(new \Tuupola\Middleware\Cors([
+    //     "origin" => ["*"],
+    //     "methods" => ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    //     "headers.allow" => [],
+    //     "headers.expose" => [],
+    //     "credentials" => false,
+    //     "cache" => 0,
+    // ]));
 
-    /* Connect Database Manager Partial : Production */
-        // /* เชื่อมต่อ DB2 */
-    $driver_db2 = "{IBM DB2 ODBC DRIVER}";
-    $database_db2 = "iWLMA";
-    $hostname_db2 = "172.16.194.210";
-    $port_db2 = 50000;
-    $user_db2 = "db2admin";
-    $password_db2 = "password";
+        // $app->add(new \Tuupola\Middleware\Cors([
+        //     "origin" => ["*"],
+        //     "methods" => ["GET", "POST", "PUT", "PATCH", "DELETE"],
+        //     "headers.allow" => ["Accept", "Content-Type"],
+        //     "headers.expose" => [],
+        //     "credentials" => false,
+        //     "cache" => 0,
+        //     "cache" => 86400
+        // ]));
 
-    $conn_string_db2 = "DRIVER=$driver_db2;DATABASE=$database_db2;";
-    $conn_string_db2 .= "HOSTNAME=$hostname_db2;PORT=$port_db2;PROTOCOL=TCPIP;";
-    $conn_string_db2 .= "UID=$user_db2;PWD=$password_db2;";
+    // $corsOptions = array("origin" => "*");
+    // $app->post('/loginManager/logout/',\CorsSlim\CorsSlim::routeMiddleware($corsOptions) ,function() use ($app, $pdo, $db) { 
+    //     logout($app, $pdo, $db); 
+    // });
 
-    try {
-        $conn_db2 = db2_connect($conn_string_db2, '', '');
+// $corsOptions2 = array(
+//     "origin" => array('http://one.allowed-origin.com', 'http://two.allowed-origin.com'),
+//     "exposeHeaders" => array("X-My-Custom-Header", "X-Another-Custom-Header"),
+//     "maxAge" => 1728000,
+//     "allowCredentials" => True,
+//     "allowMethods" => array("POST, GET"),
+//     "allowHeaders" => array("X-PINGOTHER")
+//     );
+// $cors = new \CorsSlim\CorsSlim($corsOptions);
 
-        $client = db2_client_info($conn_db2);
+    $corsOptions = array(
+                        "origin" => "*",
+                        // "origin" => array('http://172.16.148.126', 'http://two.allowed-origin.com'),
+                        "exposeHeaders" => array("X-My-Custom-Header", "X-Another-Custom-Header"),
+                        "maxAge" => 1728000,
+                        "allowCredentials" => True,
+                        "allowMethods" => array("POST", "GET"),
+                        "allowHeaders" => array("Accept", "Content-Type", "X-PINGOTHER")
+                    );
 
-        // if ($client) {
-        //     echo var_dump($client->APPL_CODEPAGE);
-        //     echo "DRIVER_NAME: ";           var_dump( $client->DRIVER_NAME );
-        //     echo "DRIVER_VER: ";            var_dump( $client->DRIVER_VER );
-        //     echo "DATA_SOURCE_NAME: ";      var_dump( $client->DATA_SOURCE_NAME );
-        //     echo "DRIVER_ODBC_VER: ";       var_dump( $client->DRIVER_ODBC_VER );
-        //     echo "ODBC_VER: ";              var_dump( $client->ODBC_VER );
-        //     echo "ODBC_SQL_CONFORMANCE: ";  var_dump( $client->ODBC_SQL_CONFORMANCE );
-        //     echo "APPL_CODEPAGE: ";         var_dump( $client->APPL_CODEPAGE );
-        //     echo "CONN_CODEPAGE: ";         var_dump( $client->CONN_CODEPAGE );
-        // } else {
-        //     echo "Error";
-        // }
+    $app->add(new \CorsSlim\CorsSlim($corsOptions));
 
 
-        if(!$conn_db2) {
-            echo db2_conn_errormsg();
-        } else {
-            //echo "Hello World, from the IBM_DB2 PHP extension!";
-            //db2_close($conn_db2);
-        }
-    } 
-    catch (Exception $e) {
-        //echo $e;
-    }
-        /* เชื่อมต่อ MySQL บนเครื่อง 172.16.194.210 (http://wlma-mt.wms.mwa/) */
-    $dsn = "mysql:dbname=rmr_db;host=localhost;charset=UTF8";
+
+    /* Connect Database Manager Partial : Localhost */
+    $conn_db2 = "";
+        $dsn = "mysql:dbname=rmr_db;host=localhost;charset=UTF8";
     $username = "root";
-    $password = "P@ssw0rd";
+    $password = "";
     $pdo = new PDO($dsn, $username, $password);
     $db = new NotORM($pdo);
 
 
 
-    /* Test manager */
+    /* Test manager */        
     $app->get('/hello/:name',function($name) use ($app) { 
         getHello($app, $name); 
     });
@@ -82,7 +87,8 @@
     $app->post('/wlmaManager/reportWLMA1125/',function() use ($app, $pdo, $conn_db2) { reportWLMA1125($app, $pdo, $conn_db2); });
     $app->post('/wlmaManager/reportWaterLeakageByDMA/',function() use ($app, $pdo, $conn_db2) { reportWaterLeakageByDMA($app, $pdo, $conn_db2); });
     $app->post('/wlmaManager/getFlowPressureByDM/',function() use ($app, $pdo, $conn_db2) { getFlowPressureByDM($app, $pdo, $conn_db2); });
-
+    $app->post('/wlmaManager/getFlowPressureWithLocation/',function() use ($app, $pdo, $db, $conn_db2) { getFlowPressureWithLocation($app, $pdo, $db, $conn_db2); });
+    $app->get('/wlmaManager/reportDMWithLocation/',function() use ($app, $pdo, $db, $conn_db2) { reportDMWithLocation($app, $pdo, $db, $conn_db2); });
 
 
 
@@ -575,49 +581,21 @@ group by area_code, to_char(log_dt, 'YYYY-MM-DD')";
 
 
 
-    /* rtuInformationGeoJSON Partial : Production */
+    /* rtuInformationGeoJSON Partial : Development */
             /* ************************* */
         /* เริ่มกระบวนการเชื่อมต่อฐานข้อมูล DB2 ของ WLMA */
         /* ************************* */
         $reports = array();
 
-
-
-        $sql = "select meter_code, rtu_log_dt, log_type, value from METER_ONLINE_DATA_LAST where meter_code = '".$postDM."'";
-
-
-        if ($conn_db2) {
-            // # code...
-            $stmt = db2_exec($conn_db2, $sql);
-
-            $tmpDM = "";
-            $tmpFlowVal = "-"; 
-            $tmpPressureVal = "-";
-
-            while ($row = db2_fetch_array($stmt)) {
-                
-                $tmpDM = iconv("TIS-620", "UTF-8",$row[0]);
-                $tmpRtuLogDt = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row[1]);
-                $tmpLogType = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row[2]);
-                $tmpValue = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row[3]);
-
-                if ($tmpLogType == "F") {
-                	$tmpFlowVal = $tmpValue;
-                } else if ($tmpLogType == "P") {
-                	$tmpPressureVal = $tmpValue;
-                }
-
-
-            }
-
-
 	       $reports[] = array(
 	            "date" => date("Y-m-d"),
-	            "dm_name" => $tmpDM,
-	            "flow_value" => (string)$tmpFlowVal,
-	            "pressure_value" => (string)$tmpPressureVal
+	            "dm_name" => $postDM,
+	            "flow_value" => (string)rand(0,200),
+	            "pressure_value" => (string)rand(0,20)
 	        );
-        }
+
+
+
 
 
 
@@ -632,6 +610,272 @@ group by area_code, to_char(log_dt, 'YYYY-MM-DD')";
         $resultText = "success";
 
         $reportResult = array("result" =>  $resultText, "rows" => $reports);
+        
+        $app->response()->header("Content-Type", "application/json");
+        echo json_encode($reportResult);
+
+
+
+    };
+        /**
+     *
+     * @apiName GetFlowPressureWithLocation
+     * @apiGroup Wlma Manager
+     * @apiVersion 0.1.0
+     *
+     * @api {post} /wlmaManager/getFlowPressureWithLocation/ Get Flow Pressure With Location
+     * @apiDescription คำอธิบาย : ในส่วนนี้จะมีหน้าที่แสดงค่า Flow, Pressure และพิกัด lat, lng
+     *
+     *
+     * @apiParam {String} name     New name of the user
+     *
+     * @apiSampleRequest /wlmaManager/getFlowPressureWithLocation/
+     *
+     * @apiSuccess {String} msg แสดงข้อความทักทายผู้ใช้งาน
+     *
+     * @apiSuccessExample Example data on success:
+     * {
+     *   "msg": "Hello, anusorn"
+     * }
+     *
+     * @apiError UserNotFound The <code>id</code> of the User was not found.
+     * @apiErrorExample {json} Error-Response:
+     *     HTTP/1.1 404 Not Found
+     *     {
+     *       "error": "UserNotFound"
+     *     }
+     *
+     */
+
+    function getFlowPressureWithLocation($app, $pdo, $db, $conn_db2) {
+
+        /* ************************* */
+        /* เริ่มกระบวนการรับค่าพารามิเตอร์จากส่วนของ Payload ซึ่งอยู่ในรูปแบบ JSON */
+        /* ************************* */
+        $headers = $app->request->headers;
+        $ContetnType = $app->request->headers->get('Content-Type');
+
+        /**
+        * apidoc @apiSampleRequest, iOS RESTKit use content-type is "application/json"
+        * Web Form, Advance REST Client App use content-type is "application/x-www-form-urlencoded"
+        */
+        if (($ContetnType == "application/json") || ($ContetnType == "application/json; charset=utf-8") ) {
+
+            $request = $app->request();
+            $result = json_decode($request->getBody());
+
+            /* receive request */
+            // $postDM = $result->paramDM;
+
+
+        } else if ($ContetnType == "application/x-www-form-urlencoded"){
+
+            //$userID = $app->request()->params('userID_param');
+            //$userID = $app->request()->post('userID_param');
+        }
+
+
+
+
+
+
+    /* rtuInformationGeoJSON Partial : Development */
+            /* ************************* */
+        /* เริ่มกระบวนการเชื่อมต่อฐานข้อมูล DB2 ของ WLMA */
+        /* ************************* */
+
+        // $reports = array();
+
+	       // $reports[] = array(
+	       //      "dm_name" => "DM-01-01-01-01",
+	       //      "lat" => "",
+	       //      "lng" => "",
+	       //      "flow_value" => (string)rand(0,200),
+	       //      "flow_log_dt" => date("Y-m-d"),
+	       //      "pressure_value" => (string)rand(0,20),
+	       //      "pressure_log_dt" => date("Y-m-d")
+	       //  );
+
+	       // $reports[] = array(
+	       //      "dm_name" => "DM-01-01-01-02",
+	       //      "lat" => "",
+	       //      "lng" => "",
+	       //      "flow_value" => (string)rand(0,200),
+	       //      "flow_log_dt" => date("Y-m-d"),
+	       //      "pressure_value" => (string)rand(0,20),
+	       //      "pressure_log_dt" => date("Y-m-d")
+	       //  );
+
+        $reports = array();
+
+        $results = $db->rtu_main_tb->where("rtu_status = 1")->order("dm_code ASC");
+        
+        foreach ($results as $result) {
+
+            $result_rtu_pin_code = $db->rtu_pin_code_tb->where("dm_code = ? and enable = 1", $result["dm_code"])->fetch();
+
+            $reports[] = array(
+            	"dm_name" => $result["dm_code"],
+            	"lat" => $result_rtu_pin_code["lat"],
+            	"lng" => $result_rtu_pin_code["lng"],
+            	"flow_value" => (string)rand(0,200),
+            	"flow_log_dt" => date("Y-m-d"),
+            	"pressure_value" => (string)rand(0,20),
+            	"pressure_log_dt" => date("Y-m-d")
+                );
+
+        }
+
+	$rowCount = count($results);
+
+
+
+
+
+
+
+
+        /* ************************* */
+        /* เริ่มกระบวนการส่งค่ากลับ */
+        /* ************************* */
+        $resultText = "success";
+
+        $reportResult = array("result" =>  $resultText, 
+                              "count" => $rowCount,
+                              "rows" => $reports);
+        
+        $app->response()->header("Content-Type", "application/json");
+        echo json_encode($reportResult);
+
+
+
+    };
+        /**
+     *
+     * @apiName ReportDMWithLocation
+     * @apiGroup Wlma Manager
+     * @apiVersion 0.1.0
+     *
+     * @api {get} /wlmaManager/reportDMWithLocation/ Report DM With Location
+     * @apiDescription คำอธิบาย : ในส่วนนี้จะมีหน้าที่แสดงค่า Flow, Pressure และพิกัด lat, lng
+     *
+     *
+     * @apiParam {String} name     New name of the user
+     *
+     * @apiSampleRequest /wlmaManager/reportDMWithLocation/
+     *
+     * @apiSuccess {String} msg แสดงข้อความทักทายผู้ใช้งาน
+     *
+     * @apiSuccessExample Example data on success:
+     * {
+     *   "msg": "Hello, anusorn"
+     * }
+     *
+     * @apiError UserNotFound The <code>id</code> of the User was not found.
+     * @apiErrorExample {json} Error-Response:
+     *     HTTP/1.1 404 Not Found
+     *     {
+     *       "error": "UserNotFound"
+     *     }
+     *
+     */
+
+    function reportDMWithLocation($app, $pdo, $db, $conn_db2) {
+
+        /* ************************* */
+        /* เริ่มกระบวนการรับค่าพารามิเตอร์จากส่วนของ Payload ซึ่งอยู่ในรูปแบบ JSON */
+        /* ************************* */
+        $headers = $app->request->headers;
+        $ContetnType = $app->request->headers->get('Content-Type');
+
+        /**
+        * apidoc @apiSampleRequest, iOS RESTKit use content-type is "application/json"
+        * Web Form, Advance REST Client App use content-type is "application/x-www-form-urlencoded"
+        */
+        if (($ContetnType == "application/json") || ($ContetnType == "application/json; charset=utf-8") ) {
+
+            $request = $app->request();
+            $result = json_decode($request->getBody());
+
+            /* receive request */
+            // $postDM = $result->paramDM;
+
+
+        } else if ($ContetnType == "application/x-www-form-urlencoded"){
+
+            //$userID = $app->request()->params('userID_param');
+            //$userID = $app->request()->post('userID_param');
+        }
+
+
+
+
+
+
+    /* rtuInformationGeoJSON Partial : Development */
+            /* ************************* */
+        /* เริ่มกระบวนการเชื่อมต่อฐานข้อมูล DB2 ของ WLMA */
+        /* ************************* */
+
+        // $reports = array();
+
+	       // $reports[] = array(
+	       //      "dm_name" => "DM-01-01-01-01",
+	       //      "lat" => "",
+	       //      "lng" => "",
+	       //      "flow_value" => (string)rand(0,200),
+	       //      "flow_log_dt" => date("Y-m-d"),
+	       //      "pressure_value" => (string)rand(0,20),
+	       //      "pressure_log_dt" => date("Y-m-d")
+	       //  );
+
+	       // $reports[] = array(
+	       //      "dm_name" => "DM-01-01-01-02",
+	       //      "lat" => "",
+	       //      "lng" => "",
+	       //      "flow_value" => (string)rand(0,200),
+	       //      "flow_log_dt" => date("Y-m-d"),
+	       //      "pressure_value" => (string)rand(0,20),
+	       //      "pressure_log_dt" => date("Y-m-d")
+	       //  );
+
+        $reports = array();
+
+        $results = $db->rtu_main_tb->where("rtu_status = 1")->order("dm_code ASC");
+        
+        foreach ($results as $result) {
+
+            $result_rtu_pin_code = $db->rtu_pin_code_tb->where("dm_code = ? and enable = 1", $result["dm_code"])->fetch();
+
+            $reports[] = array(
+            	"dm_name" => $result["dm_code"],
+            	"lat" => $result_rtu_pin_code["lat"],
+            	"lng" => $result_rtu_pin_code["lng"],
+            	"flow_value" => (string)rand(0,200),
+            	"flow_log_dt" => date("Y-m-d"),
+            	"pressure_value" => (string)rand(0,20),
+            	"pressure_log_dt" => date("Y-m-d")
+                );
+
+        }
+
+	$rowCount = count($results);
+
+
+
+
+
+
+
+
+        /* ************************* */
+        /* เริ่มกระบวนการส่งค่ากลับ */
+        /* ************************* */
+        $resultText = "success";
+
+        $reportResult = array("result" =>  $resultText, 
+                              "count" => $rowCount,
+                              "rows" => $reports);
         
         $app->response()->header("Content-Type", "application/json");
         echo json_encode($reportResult);

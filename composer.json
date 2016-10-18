@@ -3,7 +3,9 @@
         "slim/slim": "2.*",
         "vrana/notorm": "dev-master",
         "fergusean/nusoap": "^0.9.5",
-        "tuupola/slim-jwt-auth": "~1.0.2"
+        "tuupola/slim-jwt-auth": "~1.0.2",
+        "tuupola/cors-middleware": "^0.5.2",
+        "palanik/corsslim": "*"
     },
     "config" : {
         "vendor-dir" : "./source/packages"

@@ -23,6 +23,53 @@ layout: "layout-blank"
 
 
 
+    // $app->add(new \Tuupola\Middleware\Cors([
+    //     "origin" => ["*"],
+    //     "methods" => ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    //     "headers.allow" => [],
+    //     "headers.expose" => [],
+    //     "credentials" => false,
+    //     "cache" => 0,
+    // ]));
+
+        // $app->add(new \Tuupola\Middleware\Cors([
+        //     "origin" => ["*"],
+        //     "methods" => ["GET", "POST", "PUT", "PATCH", "DELETE"],
+        //     "headers.allow" => ["Accept", "Content-Type"],
+        //     "headers.expose" => [],
+        //     "credentials" => false,
+        //     "cache" => 0,
+        //     "cache" => 86400
+        // ]));
+
+    // $corsOptions = array("origin" => "*");
+    // $app->post('/loginManager/logout/',\CorsSlim\CorsSlim::routeMiddleware($corsOptions) ,function() use ($app, $pdo, $db) { 
+    //     logout($app, $pdo, $db); 
+    // });
+
+// $corsOptions2 = array(
+//     "origin" => array('http://one.allowed-origin.com', 'http://two.allowed-origin.com'),
+//     "exposeHeaders" => array("X-My-Custom-Header", "X-Another-Custom-Header"),
+//     "maxAge" => 1728000,
+//     "allowCredentials" => True,
+//     "allowMethods" => array("POST, GET"),
+//     "allowHeaders" => array("X-PINGOTHER")
+//     );
+// $cors = new \CorsSlim\CorsSlim($corsOptions);
+
+    $corsOptions = array(
+                        "origin" => "*",
+                        // "origin" => array('http://172.16.148.126', 'http://two.allowed-origin.com'),
+                        "exposeHeaders" => array("X-My-Custom-Header", "X-Another-Custom-Header"),
+                        "maxAge" => 1728000,
+                        "allowCredentials" => True,
+                        "allowMethods" => array("POST", "GET"),
+                        "allowHeaders" => array("Accept", "Content-Type", "X-PINGOTHER")
+                    );
+
+    $app->add(new \CorsSlim\CorsSlim($corsOptions));
+
+
 <% if config[:phase_environment] == "Development" %>
 
     /* Connect Database Manager Partial : Localhost */
@@ -44,7 +91,7 @@ layout: "layout-blank"
 <% end %>
 
 
-    /* Test manager */
+    /* Test manager */        
     $app->get('/hello/:name',function($name) use ($app) { 
         getHello($app, $name); 
     });
@@ -55,7 +102,8 @@ layout: "layout-blank"
     $app->post('/wlmaManager/reportWLMA1125/',function() use ($app, $pdo, $conn_db2) { reportWLMA1125($app, $pdo, $conn_db2); });
     $app->post('/wlmaManager/reportWaterLeakageByDMA/',function() use ($app, $pdo, $conn_db2) { reportWaterLeakageByDMA($app, $pdo, $conn_db2); });
     $app->post('/wlmaManager/getFlowPressureByDM/',function() use ($app, $pdo, $conn_db2) { getFlowPressureByDM($app, $pdo, $conn_db2); });
-
+    $app->post('/wlmaManager/getFlowPressureWithLocation/',function() use ($app, $pdo, $db, $conn_db2) { getFlowPressureWithLocation($app, $pdo, $db, $conn_db2); });
+    $app->get('/wlmaManager/reportDMWithLocation/',function() use ($app, $pdo, $db, $conn_db2) { reportDMWithLocation($app, $pdo, $db, $conn_db2); });
 
 
 
@@ -65,6 +113,8 @@ layout: "layout-blank"
     <%= partial "/WlmaManager/_reportWLMA1125" %>
     <%= partial "/WlmaManager/_reportWaterLeakageByDMA" %>
     <%= partial "/WlmaManager/_getFlowPressureByDM" %>
+    <%= partial "/WlmaManager/_getFlowPressureWithLocation" %>
+    <%= partial "/WlmaManager/_reportDMWithLocation" %>
 
 
 	$app->run();

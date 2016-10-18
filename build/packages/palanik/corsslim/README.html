@@ -1,0 +1,163 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+
+    <!-- Always force latest IE rendering engine or request Chrome Frame -->
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+
+    <!-- Use title if it's in the page YAML frontmatter -->
+    <title>The Middleman</title>
+
+    <link href="/stylesheets/normalize.css" rel="stylesheet" type="text/css" /><link href="/stylesheets/all.css" rel="stylesheet" type="text/css" />
+    <script src="/javascripts/all.js" type="text/javascript"></script>
+  </head>
+
+  <body class="packages packages_palanik packages_palanik_corsslim packages_palanik_corsslim_README">
+    <h1 id="corsslim">CorsSlim</h1>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS">Cross-origin resource sharing</a> (CORS) Middleware for PHP <a href="http://www.slimframework.com/">Slim Framework</a>.</p>
+
+<p><a href="https://packagist.org/packages/palanik/corsslim"><img alt="Latest Stable Version" src="https://poser.pugx.org/palanik/corsslim/v/stable.svg" /></a>
+<a href="https://travis-ci.org/palanik/CorsSlim"><img alt="Build Status" src="https://travis-ci.org/palanik/CorsSlim.svg" /></a>
+<a href="https://github.com/palanik/CorsSlim/blob/master/LICENSE"><img alt="License" src="https://poser.pugx.org/palanik/corsslim/license.svg" /></a></p>
+
+<h2 id="usage">Usage</h2>
+<p>### Composer Autoloader ###</p>
+
+<h4 id="install-with-composerhttpspackagistorgpackagespalanikcorsslim">Install with <a href="https://packagist.org/packages/palanik/corsslim">Composer</a></h4>
+<ol>
+  <li>Update your <code>composer.json</code> to require <code>palanik/corsslim</code> package.</li>
+  <li>Run <code>composer install</code> to add CorsSlim your vendor folder.
+<code>json
+{
+  "require": {
+ "palanik/corsslim": "*"
+  }
+}
+</code>
+#### Autoloading ####
+```php
+&lt;?php
+require ('./vendor/autoload.php');</li>
+</ol>
+
+<p>$app = new \Slim\Slim();</p>
+
+<p>$app-&gt;add(new \CorsSlim\CorsSlim());
+?&gt;
+```</p>
+
+<h3 id="custom-load">Custom Load</h3>
+<p>```php
+&lt;?php
+\Slim\Slim::registerAutoLoader();</p>
+
+<p>$app = new \Slim\Slim();</p>
+
+<p>require ('path_to_your_middlewares/CorsSlim.php');
+$app-&gt;add(new \CorsSlim\CorsSlim());
+?&gt;
+```</p>
+
+<h2 id="options">Options</h2>
+<p>You can create the middleware with custom options. Pass options as associative array.
+* <code>origin</code> =&gt; The value to set for <strong><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Access-Control-Allow-Origin">Access-Control-Allow-Origin</a></strong> response header. Default value is '*'.
+* <code>exposeHeaders</code> =&gt; The value to set for <strong><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Access-Control-Expose-Headers">Access-Control-Expose-Headers</a></strong> response header. Pass an array of strings.
+* <code>maxAge</code> =&gt; The value to set for <strong><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Access-Control-Max-Age">Access-Control-Max-Age</a></strong> response header.
+* <code>allowCredentials</code> =&gt; The value to set for <strong><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Access-Control-Allow-Credentials">Access-Control-Allow-Credentials</a></strong> response header. Pass True/False.
+* <code>allowMethods</code> =&gt; The value to set for <strong><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Access-Control-Allow-Methods">Access-Control-Allow-Methods</a></strong> response header. Pass an array of allowed method names. Default values are <code>GET,HEAD,PUT,POST,DELETE</code>.
+* <code>allowHeaders</code> =&gt; The value to set for <strong><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Access-Control-Allow-Headers">Access-Control-Allow-Headers</a></strong> response header. Pass an array of allowed headers.</p>
+
+<h3 id="example">Example</h3>
+<p><code>php
+$corsOptions = array(
+    "origin" =&gt; "*",
+    "exposeHeaders" =&gt; array("X-My-Custom-Header", "X-Another-Custom-Header"),
+    "maxAge" =&gt; 1728000,
+    "allowCredentials" =&gt; True,
+    "allowMethods" =&gt; array("POST, GET"),
+    "allowHeaders" =&gt; array("X-PINGOTHER")
+    );
+$cors = new \CorsSlim\CorsSlim($corsOptions);
+</code></p>
+
+<h2 id="whitelisted-origins">Whitelisted Origins</h2>
+<p>Set an array of allowed origins to <code>origin</code> option. If a matching request origin found it is used.</p>
+
+<h3 id="example-1">Example</h3>
+<p><code>php
+$corsOptions = array(
+    "origin" =&gt; array('http://one.allowed-origin.com', 'http://two.allowed-origin.com),
+    "exposeHeaders" =&gt; array("X-My-Custom-Header", "X-Another-Custom-Header"),
+    "maxAge" =&gt; 1728000,
+    "allowCredentials" =&gt; True,
+    "allowMethods" =&gt; array("POST, GET"),
+    "allowHeaders" =&gt; array("X-PINGOTHER")
+    );
+$cors = new \CorsSlim\CorsSlim($corsOptions);
+</code></p>
+
+<h2 id="route-middleware">Route Middleware</h2>
+<p>##### <em>New</em> #####
+You can now enable cors selectively for individual routes.</p>
+
+<p>Use the static method <code>routeMiddleware</code> to create and add cors middleware to specific routes.</p>
+
+<p>```php
+&lt;?php
+require ('./vendor/autoload.php');
+$app = new \Slim\Slim();</p>
+
+<p>$app-&gt;get('/item/:id', 
+          \CorsSlim\CorsSlim::routeMiddleware(), 
+          function ($name) use ($app) {
+            …
+          }
+        );
+?&gt;
+```</p>
+
+<p>Also with custom <a href="#options">options</a>.
+```php
+&lt;?php
+require ('./vendor/autoload.php');
+$app = new \Slim\Slim();</p>
+
+<p>$corsOptions = array("origin" =&gt; "*");
+$app-&gt;get('/item/:id', 
+          \CorsSlim\CorsSlim::routeMiddleware($corsOptions), 
+          function ($name) use ($app) {
+            …
+          }
+        );</p>
+
+<p>?&gt;
+```</p>
+
+<p>For <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Preflighted_requests">Preflighted requests</a>, provide <code>OPTIONS</code> implementation for the corresponding routes.</p>
+
+<p>```php
+&lt;?php
+require ('./vendor/autoload.php');
+$app = new \Slim\Slim();</p>
+
+<p>$app-&gt;options('/item', 
+          \CorsSlim\CorsSlim::routeMiddleware(), 
+          function ($name) use ($app) {}
+        );
+$app-&gt;post('/item', 
+          \CorsSlim\CorsSlim::routeMiddleware(), 
+          function ($name) use ($app) {
+            …
+          }
+        );</p>
+
+<p>?&gt;
+```
+## License ##</p>
+
+<p><a href="/packages/palanik/corsslim/LICENSE">MIT</a></p>
+
+  </body>
+</html>

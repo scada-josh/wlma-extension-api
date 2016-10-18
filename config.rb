@@ -47,7 +47,7 @@
 #   end
 # end
 
-set :phase_environment, 'Production' # Development, Test, Production 
+set :phase_environment, 'Development' # Development, Test, Production 
 
 set :css_dir, 'stylesheets'
 
@@ -61,6 +61,9 @@ set :images_dir, 'images'
 configure :build do
   # Any files you want to ignore:
   ignore '/index.html.erb'
+  ignore '/javascripts/*'
+  ignore '/stylesheets/*'
+  ignore '/images/*'
 
   # For example, change the Compass output style for deployment
   # activate :minify_css

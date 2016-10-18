@@ -1,0 +1,107 @@
+        /* ************************* */
+        /* เริ่มกระบวนการเชื่อมต่อฐานข้อมูล MySQL */
+        /* ************************* */
+        $reports = array();
+
+        $results = $db->rtu_main_tb->where("rtu_status = 1")->order("dm_code ASC");
+        
+        foreach ($results as $result) {
+
+            $result_rtu_pin_code = $db->rtu_pin_code_tb->where("dm_code = ? and enable = 1", $result["dm_code"])->fetch();
+
+            /* ************************* */
+            /* เริ่มกระบวนการเชื่อมต่อฐานข้อมูล DB2 ของ WLMA */
+            /* ************************* */
+
+            $sql = "select meter_code, log_dt, log_type, value from METER_ONLINE_DATA_LAST where meter_code = '".$result["dm_code"]."'";
+
+            if ($conn_db2) {
+                // # code...
+                $stmt = db2_exec($conn_db2, $sql);
+
+                $tmpDM = "";
+                $tmpFlowVal = "-"; 
+                $tmpFlowLogDT = "-";
+                $tmpPressureVal = "-";
+                $tmpPressureLogDT = "-";
+
+                while ($row = db2_fetch_array($stmt)) {
+                    
+                    $tmpDM = iconv("TIS-620", "UTF-8",$row[0]);
+                    $tmpLogDt = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row[1]);
+                    $tmpLogType = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row[2]);
+                    $tmpValue = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row[3]);
+
+                    if ($tmpLogType == "F") {
+                        $tmpFlowVal = $tmpValue;
+                        $tmpFlowLogDT = $tmpLogDt;
+                    } else if ($tmpLogType == "P") {
+                        $tmpPressureVal = $tmpValue;
+                        $tmpPressureLogDT = $tmpLogDt;
+                    }
+                }
+            } else {
+                $tmpFlowVal = "-"; 
+                $tmpFlowLogDT = "-";
+                $tmpPressureVal = "-";
+                $tmpPressureLogDT = "-";
+            }
+
+
+
+            $reports[] = array(
+                "dm_name" => $result["dm_code"],
+                "lat" => $result_rtu_pin_code["lat"],
+                "lng" => $result_rtu_pin_code["lng"],
+                "flow_value" => $tmpFlowVal,
+                "flow_log_dt" => $tmpFlowLogDT,
+                "pressure_value" => $tmpPressureVal,
+                "pressure_log_dt" => $tmpPressureLogDT
+                );
+
+        }
+
+    $rowCount = count($results);
+    
+        // /* ************************* */
+        // /* เริ่มกระบวนการเชื่อมต่อฐานข้อมูล DB2 ของ WLMA */
+        // /* ************************* */
+        // $reports = array();
+
+
+
+        // $sql = "select meter_code, rtu_log_dt, log_type, value from METER_ONLINE_DATA_LAST where meter_code = '".$postDM."'";
+
+
+        // if ($conn_db2) {
+        //     // # code...
+        //     $stmt = db2_exec($conn_db2, $sql);
+
+        //     $tmpDM = "";
+        //     $tmpFlowVal = "-"; 
+        //     $tmpPressureVal = "-";
+
+        //     while ($row = db2_fetch_array($stmt)) {
+                
+        //         $tmpDM = iconv("TIS-620", "UTF-8",$row[0]);
+        //         $tmpRtuLogDt = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row[1]);
+        //         $tmpLogType = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row[2]);
+        //         $tmpValue = iconv("TIS-620//IGNORE", "UTF-8//IGNORE",$row[3]);
+
+        //         if ($tmpLogType == "F") {
+        //         	$tmpFlowVal = $tmpValue;
+        //         } else if ($tmpLogType == "P") {
+        //         	$tmpPressureVal = $tmpValue;
+        //         }
+
+
+        //     }
+
+
+	       // $reports[] = array(
+	       //      "date" => date("Y-m-d"),
+	       //      "dm_name" => $tmpDM,
+	       //      "flow_value" => (string)$tmpFlowVal,
+	       //      "pressure_value" => (string)$tmpPressureVal
+	       //  );
+        // }

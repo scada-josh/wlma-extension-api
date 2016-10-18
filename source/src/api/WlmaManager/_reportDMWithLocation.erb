@@ -1,0 +1,98 @@
+    /**
+     *
+     * @apiName ReportDMWithLocation
+     * @apiGroup Wlma Manager
+     * @apiVersion 0.1.0
+     *
+     * @api {get} /wlmaManager/reportDMWithLocation/ Report DM With Location
+     * @apiDescription คำอธิบาย : ในส่วนนี้จะมีหน้าที่แสดงค่า Flow, Pressure และพิกัด lat, lng
+     *
+     *
+     * @apiParam {String} name     New name of the user
+     *
+     * @apiSampleRequest /wlmaManager/reportDMWithLocation/
+     *
+     * @apiSuccess {String} msg แสดงข้อความทักทายผู้ใช้งาน
+     *
+     * @apiSuccessExample Example data on success:
+     * {
+     *   "msg": "Hello, anusorn"
+     * }
+     *
+     * @apiError UserNotFound The <code>id</code> of the User was not found.
+     * @apiErrorExample {json} Error-Response:
+     *     HTTP/1.1 404 Not Found
+     *     {
+     *       "error": "UserNotFound"
+     *     }
+     *
+     */
+
+    function reportDMWithLocation($app, $pdo, $db, $conn_db2) {
+
+        /* ************************* */
+        /* เริ่มกระบวนการรับค่าพารามิเตอร์จากส่วนของ Payload ซึ่งอยู่ในรูปแบบ JSON */
+        /* ************************* */
+        $headers = $app->request->headers;
+        $ContetnType = $app->request->headers->get('Content-Type');
+
+        /**
+        * apidoc @apiSampleRequest, iOS RESTKit use content-type is "application/json"
+        * Web Form, Advance REST Client App use content-type is "application/x-www-form-urlencoded"
+        */
+        if (($ContetnType == "application/json") || ($ContetnType == "application/json; charset=utf-8") ) {
+
+            $request = $app->request();
+            $result = json_decode($request->getBody());
+
+            /* receive request */
+            // $postDM = $result->paramDM;
+
+
+        } else if ($ContetnType == "application/x-www-form-urlencoded"){
+
+            //$userID = $app->request()->params('userID_param');
+            //$userID = $app->request()->post('userID_param');
+        }
+
+
+
+
+
+<% if config[:phase_environment] == "Development" %>
+
+    /* rtuInformationGeoJSON Partial : Development */
+    <%= partial "/WlmaManager/reportDMWithLocation/_development" %>
+
+<% elsif config[:phase_environment] == "Test" %>
+
+    /* rtuInformationGeoJSON Partial : Test */
+    <%= partial "/WlmaManager/reportDMWithLocation/_development" %>
+
+<% elsif config[:phase_environment] == "Production" %>
+
+    /* rtuInformationGeoJSON Partial : Production */
+    <%= partial "/WlmaManager/reportDMWithLocation/_production" %>
+
+<% end %>
+
+
+
+
+
+
+        /* ************************* */
+        /* เริ่มกระบวนการส่งค่ากลับ */
+        /* ************************* */
+        $resultText = "success";
+
+        $reportResult = array("result" =>  $resultText, 
+                              "count" => $rowCount,
+                              "rows" => $reports);
+        
+        $app->response()->header("Content-Type", "application/json");
+        echo json_encode($reportResult);
+
+
+
+    };

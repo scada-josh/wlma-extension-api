@@ -1,0 +1,47 @@
+        /* ************************* */
+        /* เริ่มกระบวนการเชื่อมต่อฐานข้อมูล DB2 ของ WLMA */
+        /* ************************* */
+
+        // $reports = array();
+
+	       // $reports[] = array(
+	       //      "dm_name" => "DM-01-01-01-01",
+	       //      "lat" => "",
+	       //      "lng" => "",
+	       //      "flow_value" => (string)rand(0,200),
+	       //      "flow_log_dt" => date("Y-m-d"),
+	       //      "pressure_value" => (string)rand(0,20),
+	       //      "pressure_log_dt" => date("Y-m-d")
+	       //  );
+
+	       // $reports[] = array(
+	       //      "dm_name" => "DM-01-01-01-02",
+	       //      "lat" => "",
+	       //      "lng" => "",
+	       //      "flow_value" => (string)rand(0,200),
+	       //      "flow_log_dt" => date("Y-m-d"),
+	       //      "pressure_value" => (string)rand(0,20),
+	       //      "pressure_log_dt" => date("Y-m-d")
+	       //  );
+
+        $reports = array();
+
+        $results = $db->rtu_main_tb->where("rtu_status = 1")->order("dm_code ASC");
+        
+        foreach ($results as $result) {
+
+            $result_rtu_pin_code = $db->rtu_pin_code_tb->where("dm_code = ? and enable = 1", $result["dm_code"])->fetch();
+
+            $reports[] = array(
+            	"dm_name" => $result["dm_code"],
+            	"lat" => $result_rtu_pin_code["lat"],
+            	"lng" => $result_rtu_pin_code["lng"],
+            	"flow_value" => (string)rand(0,200),
+            	"flow_log_dt" => date("Y-m-d"),
+            	"pressure_value" => (string)rand(0,20),
+            	"pressure_log_dt" => date("Y-m-d")
+                );
+
+        }
+
+	$rowCount = count($results);
